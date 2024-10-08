@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { compare } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
 import { Model } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from './dto/user.dto';
@@ -54,6 +55,15 @@ export class UserService {
     return {
       username: userEntity.username,
       email: userEntity.email,
+      token: this.generateJwt(userEntity),
     };
+  }
+
+  generateJwt(userEntity: UserEntity): string {
+    return sign({ email: userEntity.email }, 'JWT_SECRET');
+  }
+
+  async findByEmail(email: string): Promise<UserEntity> {
+    return this.userModel.findOne({ email });
   }
 }
