@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Post,
   Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from './dto/user.dto';
@@ -18,6 +20,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('user')
+  @UsePipes(new ValidationPipe())
   async createUser(
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserResponseType> {
@@ -26,12 +29,14 @@ export class UserController {
   }
 
   @Post('user/login')
+  @UsePipes(new ValidationPipe())
   async login(@Body() loginDto: LoginDto): Promise<UserResponseType> {
     const user = await this.userService.loginUser(loginDto);
     return this.userService.buildUserResponse(user);
   }
 
   @Get('user')
+  @UsePipes(new ValidationPipe())
   async currentUser(
     @Request() request: ExpressRequest,
   ): Promise<UserResponseType> {
